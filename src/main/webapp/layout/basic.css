@@ -1,0 +1,29 @@
+html, body, #page {
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+#page {
+  display: table;
+}
+
+#slot-header, #slot-main, #slot-footer {
+  display: table-row;
+  overflow: visible;
+  width: 100%;
+}
+
+#slot-header {
+  height: 100px;
+}
+
+#slot-main {
+  padding: 8px;
+}
+
+#slot-footer {
+  height: 50px;
+}

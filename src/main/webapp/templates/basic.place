@@ -1,0 +1,5 @@
+window.ctsasup.place && window.ctsasup.place({
+    "slot-header": "http://localhost/ctsasup/components/header.frag",
+    "slot-main": "http://localhost/ctsasup/components/main.frag",
+    "slot-footer": "http://localhost/ctsasup/components/footer.frag"
+  });
