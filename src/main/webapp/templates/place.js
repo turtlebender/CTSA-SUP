@@ -1,0 +1,5 @@
+var slots = {
+    "slot-header": "../components/header.frag",
+    "slot-main": "../components/main.frag",
+    "slot-footer": "../components/footer.frag"
+}
