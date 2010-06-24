@@ -31,6 +31,9 @@
             <version>4.8.1</version>
             <scope>test</scope>
         </dependency>
+<<<<<<< HEAD
+
+=======
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-server</artifactId>
@@ -58,6 +61,7 @@
     <artifactId>logback-classic</artifactId>
     <version>0.9.21</version>
 </dependency>
+>>>>>>> added server functionality
     </dependencies>
 
     <build>
