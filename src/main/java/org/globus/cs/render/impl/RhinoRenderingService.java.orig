@@ -1,6 +1,9 @@
 package org.globus.cs.render.impl;
 
+<<<<<<< HEAD
+=======
 import com.google.inject.Singleton;
+>>>>>>> added server functionality
 import org.globus.cs.render.PreRenderingService;
 import org.globus.cs.render.RenderingException;
 import org.mozilla.javascript.*;
@@ -15,7 +18,10 @@ import java.net.URI;
  * This is an implementation of the PreRenderingService which use the Rhino engine to resolve the DHTML
  * into displayable HTML.  Specifically, this calls the "load" method of the supplied DHTML
  */
+<<<<<<< HEAD
+=======
 @Singleton
+>>>>>>> added server functionality
 public class RhinoRenderingService implements PreRenderingService {
 
     Context context;
@@ -27,13 +33,20 @@ public class RhinoRenderingService implements PreRenderingService {
     final String RENDER_CONTEXT_NAME = "prerender";
 
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> added server functionality
     /**
      * Initialize the global Rhino context by loading global and env.js.
      *
      * @throws RenderingException If the initialization fails.
      */
+<<<<<<< HEAD
+    public void init() throws RenderingException {
+=======
     public RhinoRenderingService() throws RenderingException {
+>>>>>>> added server functionality
         context = ContextFactory.getGlobal().enterContext();
         context.setOptimizationLevel(-1);
         context.setLanguageVersion(Context.VERSION_1_7);
@@ -62,7 +75,11 @@ public class RhinoRenderingService implements PreRenderingService {
         Context threadContext = ContextFactory.getGlobal().enterContext();
         try {
             Scriptable threadScope = getScope(threadContext);
+<<<<<<< HEAD
+            threadScope.put(SLOT_LOCATION_VAR_NAME, threadScope, slotMapping.toASCIIString().replace("file:/", "file:////"));
+=======
             threadScope.put(SLOT_LOCATION_VAR_NAME, threadScope, slotMapping.toASCIIString().replace("file:/", "file:////"));            
+>>>>>>> added server functionality
             Object candidate = threadScope.get("render", threadScope);
             if (!(candidate instanceof Function)) {
                 throw new RenderingException("\"render\" is not a function");
@@ -71,11 +88,19 @@ public class RhinoRenderingService implements PreRenderingService {
                 Object result = renderFunction.call(threadContext, threadScope, threadScope, new Object[]{
                         templateLocation.toASCIIString().replace("file:/", "file:////"),
                         slotMapping.toASCIIString().replace("file:/", "file:////")}).toString();
+<<<<<<< HEAD
+                writer.write(result.toString());
+            }
+        } catch (IOException ioe) {
+            throw new RenderingException(ioe);
+        }
+=======
                 writer.write((String) result);
             }
         } catch (IOException ioe) {
             throw new RenderingException(ioe);
         } 
+>>>>>>> added server functionality
     }
 
     /**
