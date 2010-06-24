@@ -16,6 +16,10 @@ public class RhinoRendererTest {
     @Before
     public void init() throws Exception {
         service = new RhinoRenderingService();
+<<<<<<< HEAD
+        service.init();
+=======
+>>>>>>> added unit test for rendering engine
     }
 
     /**
