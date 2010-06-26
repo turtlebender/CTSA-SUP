@@ -1,0 +1,28 @@
+<html>
+<head>
+<title>Template!</title>
+<link rel="stylesheet" type="text/css" href="../layout/basic.css">
+<script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="main.js"></script>
+<script type="text/javascript">
+if(!window.ctsasup) window.ctsasup = {};
+window.ctsasup.preload = function() {
+  this.place({
+      "slot-header": "../components/header.frag",
+      "slot-main": "../components/gadget.frag",
+      "slot-footer": "../components/footer.frag"
+    });
+};
+window.ctsasup.load = function() {
+  
+};
+</script>
+</head>
+<body>
+<div id="page">
+<div id="slot-header"></div>
+<div id="slot-main"></div>
+<div id="slot-footer"></div>
+</div>
+</body>
+</html>
