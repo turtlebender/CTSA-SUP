@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="Hello, World!">
+    <Require feature="opensocial-0.8" />
+    <Preload href="http://ci.azich.org/ctsasup/templates/jquery-1.4.2.min.js" />
+    <Preload href="http://ci.azich.org/ctsasup/templates/main.js" />
+  </ModulePrefs>
+  <Content type="html">
+    <![CDATA[
+<style type="text/css">
+html, body {
+  marign: 0px;
+  width: 100%;
+  height: 100%;
+  padding: 0px;
+}
+
+body {
+ color: #333;
+ margin: 5px;
+}
+
+a {
+  color: #5C6E7D;
+  text-decoration: none;
+}
+
+a:link {
+  color: #5C6E7D;
+}
+
+a:hover {
+  color: #B42C33
+}
+
+a:visited {
+  color: #B42C33;
+}
+</style>
+<script type="text/javascript" src="http://ci.azich.org/ctsasup/templates/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="http://ci.azich.org/ctsasup/templates/main.js"></script>
+<div id="main-content"></div>
+<script type="text/javascript">
+//Ideally this will be done through the makeRequest but it also works using JSONP like the component example.
+
+$(document).ready(function() {
+    $.getJSON("http://ctsa-test.ci.uchicago.edu:8080/HelloWorld/helloworld?callback=?",function(data) {
+        $('#main-content').html(data);
+      });
+  });
+</script>
+I'm a gadget so this link can't redirect the whole page: <a href="http://ci.uchicago.edu/">ci.uchicago.edu</a>
+    ]]>
+  </Content>
+</Module>
