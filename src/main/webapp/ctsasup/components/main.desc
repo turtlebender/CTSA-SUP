@@ -1,0 +1,14 @@
+{
+  "title": "Sample Component",
+  "author": "Andrew Zich",
+  "description": "Hello, World component",
+  "content": {
+    "uri": "main.frag"
+  },
+  "preload": {
+    "hello": {
+      "uri": "http://ctsa-test.ci.uchicago.edu:8080/HelloWorld/helloworld",
+      "callback": "gothw"
+    }
+  }
+}

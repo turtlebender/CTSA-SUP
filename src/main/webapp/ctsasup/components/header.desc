@@ -1,0 +1,8 @@
+{
+  "title": "Header Component",
+  "author": "Andrew Zich",
+  "description": "Basic CI header",
+  "content": {
+    "uri": "header.frag"
+  }
+}
