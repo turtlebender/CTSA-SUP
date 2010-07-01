@@ -1,20 +1,13 @@
 <html>
 <head>
-<title>Template!</title>
+<title>Basic Page</title>
 <link rel="stylesheet" type="text/css" href="../layout/basic.css">
 <script type="text/javascript" src="jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="main.js"></script>
 <script type="text/javascript">
 if(!window.ctsasup) window.ctsasup = {};
-window.ctsasup.preload = function() {
-  this.place({
-      "slot-header": "../components/header.frag",
-      "slot-main": "../components/main.frag",
-      "slot-footer": "../components/footer.frag"
-    });
-};
 window.ctsasup.load = function() {
-  
+  this.process("basic.desc");
 };
 </script>
 </head>
