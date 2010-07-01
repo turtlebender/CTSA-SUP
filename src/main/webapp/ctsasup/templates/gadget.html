@@ -6,15 +6,8 @@
 <script type="text/javascript" src="main.js"></script>
 <script type="text/javascript">
 if(!window.ctsasup) window.ctsasup = {};
-window.ctsasup.preload = function() {
-  this.place({
-      "slot-header": "../components/header.frag",
-      "slot-main": "../components/gadget.frag",
-      "slot-footer": "../components/footer.frag"
-    });
-};
 window.ctsasup.load = function() {
-  
+  this.process("gadget.desc");
 };
 </script>
 </head>
