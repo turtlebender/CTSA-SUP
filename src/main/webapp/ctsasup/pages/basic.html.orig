@@ -7,11 +7,7 @@
 <script type="text/javascript">
 if(!window.ctsasup) window.ctsasup = {};
 window.ctsasup.load = function() {
-<<<<<<< HEAD
   this.process("http://localhost:8080/ctsa-sup/pages/newpage.json");
-=======
-  this.process("basic.desc");
->>>>>>> Restructuring files
 };
 </script>
 </head>

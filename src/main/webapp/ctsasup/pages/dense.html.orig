@@ -273,10 +273,6 @@ window.ctsasup.contentify = function(o,batch) {
   .preload(preload,base,batch) - Load/execute a preload object with the specified base URI and Batch
  */
 window.ctsasup.preload = function(preload,base,batch) {
-<<<<<<< HEAD
-=======
-    window.console.log([preload,base,batch]);
->>>>>>> Restructuring files
     if(!preload) return;
     var me = this;
     if(!batch) {
