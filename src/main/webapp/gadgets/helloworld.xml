@@ -2,8 +2,9 @@
 <Module>
   <ModulePrefs title="Hello, World!">
     <Require feature="opensocial-0.8" />
-    <Preload href="http://ci.azich.org/ctsasup/templates/jquery-1.4.2.min.js" />
-    <Preload href="http://ci.azich.org/ctsasup/templates/main.js" />
+    <Require feature="osapi" />
+    <Preload href="http://ci.azich.org/ctsasup/pages/jquery-1.4.2.min.js" />
+    <Preload href="http://ci.azich.org/ctsasup/pages/main.js" />
   </ModulePrefs>
   <Content type="html">
     <![CDATA[
@@ -37,8 +38,8 @@ a:visited {
   color: #B42C33;
 }
 </style>
-<script type="text/javascript" src="http://ci.azich.org/ctsasup/templates/jquery-1.4.2.min.js"></script>
-<script type="text/javascript" src="http://ci.azich.org/ctsasup/templates/main.js"></script>
+<script type="text/javascript" src="http://ci.azich.org/ctsasup/pages/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="http://ci.azich.org/ctsasup/pages/main.js"></script>
 <div id="main-content"></div>
 <script type="text/javascript">
 //Ideally this will be done through the makeRequest but it also works using JSONP like the component example.
