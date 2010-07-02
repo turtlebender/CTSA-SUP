@@ -1,18 +1,25 @@
 package org.globus.cs.render.impl;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
-@XmlRootElement
-public class Page {
-    public String templateURI;
-    public String slotdefURI;
+
+public class Page implements Serializable {
+    public String name;
+    public String version;
+    public String author;
+    public String description;
+    public Map<String, Component> slotMappings = new HashMap<String, Component>();
+    public Map<String, Preload> preload = new HashMap<String, Preload>();
 
     public Page() {
     }
 
-    public Page(String templateURI, String slotdefURI) {
-        this.templateURI = templateURI;
-        this.slotdefURI = slotdefURI;
+    public Page(String name, String version, String author, Map<String, Component> slotMappings) {
+        this.name = name;
+        this.version = version;
+        this.author = author;
+        this.slotMappings = slotMappings;
     }
-
 }

@@ -1,0 +1,21 @@
+<html>
+<head>
+<title>Basic Page</title>
+<link rel="stylesheet" type="text/css" href="../layout/basic.css">
+<script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="main.js"></script>
+<script type="text/javascript">
+if(!window.ctsasup) window.ctsasup = {};
+window.ctsasup.load = function() {
+  this.process("http://localhost:8080/ctsa-sup/pages/newpage.json");
+};
+</script>
+</head>
+<body>
+<div id="page">
+<div id="slot-header"></div>
+<div id="slot-main"></div>
+<div id="slot-footer"></div>
+</div>
+</body>
+</html>

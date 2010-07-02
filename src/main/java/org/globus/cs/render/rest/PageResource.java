@@ -2,64 +2,64 @@ package org.globus.cs.render.rest;
 
 import com.google.inject.Inject;
 import com.google.inject.servlet.RequestScoped;
-import org.globus.cs.render.PreRenderingService;
+import com.sun.jersey.api.json.JSONWithPadding;
 import org.globus.cs.render.impl.Page;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.globus.cs.render.impl.PageStore;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintWriter;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import javax.ws.rs.core.*;
 
-
-/**
- * Created by IntelliJ IDEA.
- * User: trhowe
- * Date: Jun 23, 2010
- * Time: 1:28:12 PM
- * To change this template use File | Settings | File Templates.
- */
-@Path("/pages")
+@Path("/pages/{name}")
 @RequestScoped
 public class PageResource {
-    private PreRenderingService renderer;
-    private static Map<String, Page> pages = new HashMap<String, Page>();
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    @PathParam("name")
+    private String name;
+    @Context
+    private Request request;
+    @Context
+    private HttpServletRequest servletRequest;
+    @Context
+    private UriInfo info;
+    private PageStore store;
+
 
     @Inject
-    public PageResource(PreRenderingService renderer) {
-        this.renderer = renderer;
+    public PageResource(PageStore store) {
+        this.store = store;
     }
 
-    @Path("/{name}")
     @GET
-    @Produces(MediaType.TEXT_HTML)
-    public Response writePage(@PathParam("name") String name) throws Exception {
-        logger.info("Getting page {}", name);
-        Page page = pages.get(name);
-        if (page == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+    @Produces({"application/javascript", "application/org.globus.cs.webdef.page+json", "application/x-javascript",
+            "text/ecmascript", "application/ecmascript", "text/jscript"})
+    public Response getPage(@QueryParam("callback") String callback) throws Exception{
+        Page page = store.getPage(name);
+        //Check version
+        Response.ResponseBuilder rb = request.evaluatePreconditions(new EntityTag(page.version));
+        if (rb != null)
+            return rb.build();
+        JsonpResult result;
+        if (callback == null) {
+            result = new JsonpResult(page);
+        } else {
+            result = new JsonpResult(page, callback);
         }
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        PrintWriter writer = new PrintWriter(os);
-        renderer.prerender(new URI(page.templateURI), new URI(page.slotdefURI), writer);
-        writer.close();
-        return Response.ok(os.toByteArray()).build();
+        String returnType = servletRequest.getHeader("Accepts");
+        if(MediaType.WILDCARD.equals(returnType)){
+            returnType = "application/javascript";
+        }        
+        return Response.ok(result).type(returnType).tag(page.version).build();
     }
 
-    @Path("/{name}")
+
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response createPage(@Context UriInfo uriInfo, @PathParam("name") String name, Page pageDef) {
-        logger.info("storing page {}", name);
-        pages.put(name, pageDef);
-        return Response.created(uriInfo.getAbsolutePathBuilder().path(name).build()).build();
+    @Consumes("application/org.globus.cs.webdef.page+json")
+    public Response storePage(Page page){
+        try {
+            store.storePage(name,page);
+        } catch (Exception e) {
+            throw new WebApplicationException(e, Response.Status.fromStatusCode(500));
+        }
+        return Response.created(info.getAbsolutePath()).build();
     }
 }
