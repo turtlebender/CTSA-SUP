@@ -1,0 +1,9 @@
+{
+    "title": "Really Boring Component #2",
+    "author": "Tom Howe",
+    "description": "Example component",
+    "content":
+    {
+        "uri": "http://localhost/~trhowe/webtool/main.frag"
+    }
+}
