@@ -1,11 +1,23 @@
 if(!window.ctsasup) window.ctsasup = {};
 
 /*
-  newBatch() - Create a new Batch
-  .add(uri,callback,data,dataType) - Add work to the Batch
-  .execute() - Do all work in the Batch (in one request if possible)
+  .newBatch() - Create a new Batch
+    .add(uri,callback,data,dataType) - Add work to the Batch
+    .execute() - Do all work in the Batch (in one request if possible)
 */
 window.ctsasup.newBatch = function() {
+    if(window.osapi && window.osapi.newBatch) {
+	return window.ctsasup.newBatch_osapi();
+    } else if(window.location.protocol == "file:") {
+	return window.ctsasup.newBatch_jquery();
+    }
+    return window.ctsasup.newBatch_jsonproxy();
+}
+
+/*
+  .newBatch_jquery() - Create a new AJAX/jQuery (direct) Batch
+ */
+window.ctsasup.newBatch_jquery = function() {
     return {
 	'_todo': [],
 	'_finally': null,
@@ -29,6 +41,64 @@ window.ctsasup.newBatch = function() {
 	}
     };
 };
+
+/*
+  .newBatch_jsonproxy() - Create a new JSONP (proxy) Batch
+ */
+window.ctsasup.newBatch_jsonproxy = function() {
+    return {
+	'_todo': [],
+	'_finally': null,
+	'add': function(uri,cb,data,type) {
+	    var me = this;
+	    this._todo.push(function() {//This could look prettier
+		    $.ajax({url:"http://ci.azich.org/proxy.php?uri="+escape(window.ctsasup.resolve(""+window.location,uri)),dataType:"jsonp",data:data,success:
+			    function(data) {
+				if(!data || !data.content) return;
+				data = data.content;
+				if(cb) cb(type=="json"?$.parseJSON(data):data);
+				if(me._todo.length != 0) return;
+				if(me._finally) me._finally();
+			    }
+			})});
+	},
+	'execute': function(cb) {
+	    this._finally = cb;
+	    if(this._todo.length == 0 && cb) cb();
+	    while(this._todo.length > 0) {
+		this._todo.shift().call(this);
+	    }
+	}
+    };
+};
+
+/*
+  .newBatch_osapi() - Create a new OpenSocial Batch
+*/
+window.ctsasup.newBatch_osapi = function() {
+    return {
+	'_batch': osapi.newBatch(),
+	'_order': [],
+	'_params': {},
+	'add': function(uri,cb,data,type) { //data is currently ignored
+	    var id = "batch"+Math.random();
+	    this._order.push(id);
+	    this._order.push(id);
+	    this._params[id] = {cb:cb,data:data,type:type};
+	    this._batch.add(id,uri);
+	},
+	'execute': function(cb) {
+	    this._batch.execute(function(result) {
+		    for(var i = 0; i < this._order.length; i++) {
+			var id = this._order[i];
+			var params = this._params[id];
+			if(params.cb) params.cb(result[id]);
+		    }
+		    if(cb) cb();
+		});
+	}
+    };
+}
 
 /*
   .resolve(base,path) - Basic URI resolver
@@ -164,4 +234,5 @@ window.ctsasup._load = function() {
     if(this.load) this.load();
 };
 
+$.ajaxSetup({"beforeSend":function(xhr){if(xhr.overrideMimeType)xhr.overrideMimeType("application/data")}});
 $(document).ready(function(){window.ctsasup._load()});
