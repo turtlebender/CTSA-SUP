@@ -1,9 +1,10 @@
 package org.globus.cs.render.impl;
 
 import com.google.inject.Inject;
+import org.globus.cs.render.ComponentStore;
 
 
-public class DefaultComponentStore implements ComponentStore{
+public class DefaultComponentStore implements ComponentStore {
     private ComponentStore remoteStore;
     private ComponentStore localStore;
 

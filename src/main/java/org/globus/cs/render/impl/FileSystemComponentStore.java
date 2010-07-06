@@ -5,6 +5,8 @@ import com.sun.jersey.api.client.Client;
 import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
+import org.globus.cs.render.ComponentStore;
+import org.globus.cs.render.RemoteResourceHelperFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

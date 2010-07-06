@@ -2,6 +2,8 @@ package org.globus.cs.render.impl;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;
+import org.globus.cs.render.PreloadStore;
+import org.globus.cs.render.RemoteResourceHelperFactory;
 
 
 public class DefaultPreloadStore implements PreloadStore {
