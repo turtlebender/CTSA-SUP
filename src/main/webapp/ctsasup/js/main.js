@@ -8,10 +8,11 @@ if(!window.ctsasup) window.ctsasup = {};
 window.ctsasup.newBatch = function() {
     if(window.osapi && window.osapi.newBatch) {
 	return window.ctsasup.newBatch_osapi();
-    } else if(window.location.protocol == "file:") {
-	return window.ctsasup.newBatch_jquery();
     }
-    return window.ctsasup.newBatch_jsonproxy();
+    //These lines are commented so we default to jquery instead of jsonproxy
+    //} else if(window.location.protocol == "file:") {
+    return window.ctsasup.newBatch_jquery();
+    //return window.ctsasup.newBatch_jsonproxy();
 }
 
 /*
@@ -92,7 +93,7 @@ window.ctsasup.newBatch_osapi = function() {
 		    for(var i = 0; i < this._order.length; i++) {
 			var id = this._order[i];
 			var params = this._params[id];
-			if(params.cb) params.cb(result[id]);
+			if(params.cb) params.cb(params.type=="json"||params.type=="jsonp"?$.parseJSON(result[id]):result[id]);
 		    }
 		    if(cb) cb();
 		});
@@ -139,7 +140,7 @@ window.ctsasup.contentify = function(o,batch) {
 	(batch?batch.add:$.get)(o.uri,function(data) {
 		o.content = data;
 		if(o.callback) o.callback(data);
-	    });
+	    },null,o.dataType);
     }
     for(var k in o) { this.contentify(o[k]); }
 };
@@ -163,7 +164,7 @@ window.ctsasup.preload = function(preload,base,batch) {
 	    if(preload[id].content) {
 		if(callback) callback(preload[id].content);
 	    } else if(preload[id].uri) {
-		batch.add(me.resolve(base,preload[id].uri),callback);
+		batch.add(me.resolve(base,preload[id].uri),callback,null,preload[id].dataType);
 	    }
 	})();
     }
@@ -223,7 +224,7 @@ window.ctsasup.processc = function(id,desc,base) {
     } else if(desc.content.uri) {
 	batch.add(this.resolve(base,desc.content.uri),function(data) {
 		me.place(id,data);
-	    });
+	    },null,desc.content.dataType);
     }
     batch.execute(function() {
 	    me.preload(desc.preload,base);
