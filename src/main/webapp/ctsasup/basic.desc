@@ -3,9 +3,9 @@
   "author": "Andrew Zich",
   "description": "An sample page that uses only components and URI-based data requests",
   "slotMappings": {
-    "slot-header": {"uri": "../components/header.desc"},
-    "slot-main": {"uri": "../components/main.desc"},
-    "slot-footer": {"uri": "../components/footer.desc"}
+    "slot-header": {"uri": "components/header.desc"},
+    "slot-main": {"uri": "components/main.desc"},
+    "slot-footer": {"uri": "components/footer.desc"}
   },
   "preload": {
     
