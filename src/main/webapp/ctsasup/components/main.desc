@@ -8,6 +8,7 @@
   "preload": {
     "hello": {
       "uri": "http://ctsa-test.ci.uchicago.edu:8080/HelloWorld/helloworld",
+      "dataType": "jsonp",
       "callback": "gothw"
     }
   }
