@@ -1,4 +1,6 @@
-package org.globus.cs.render.impl;
+package org.globus.cs.render;
+
+import org.globus.cs.render.impl.Component;
 
 /**
  * Created by IntelliJ IDEA.

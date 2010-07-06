@@ -2,8 +2,10 @@ package org.globus.cs.render.impl;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;
+import org.globus.cs.render.ComponentStore;
+import org.globus.cs.render.RemoteResourceHelperFactory;
 
-public class RemoteComponentStore implements ComponentStore  {
+public class RemoteComponentStore implements ComponentStore {
     private RemoteResourceHelper<Component> resourceHelper;
 
     @Inject

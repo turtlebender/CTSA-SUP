@@ -2,12 +2,11 @@ package org.globus.cs.render.rest;
 
 import com.google.inject.Inject;
 import com.google.inject.servlet.RequestScoped;
+import org.globus.cs.render.ComponentStore;
 import org.globus.cs.render.impl.Component;
-import org.globus.cs.render.impl.ComponentStore;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 

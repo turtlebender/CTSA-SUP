@@ -2,9 +2,8 @@ package org.globus.cs.render.rest;
 
 import com.google.inject.Inject;
 import com.google.inject.servlet.RequestScoped;
-import com.sun.jersey.api.json.JSONWithPadding;
+import org.globus.cs.render.PageStore;
 import org.globus.cs.render.impl.Page;
-import org.globus.cs.render.impl.PageStore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;

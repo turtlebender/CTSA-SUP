@@ -13,6 +13,7 @@
     <groupId>org.globus.cs</groupId>
     <artifactId>ctsa-sup</artifactId>
     <version>1.0</version>
+    <packaging>war</packaging>
 
     <dependencies>
         <dependency>

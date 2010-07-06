@@ -4,6 +4,9 @@ import com.google.inject.Inject;
 import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
+import org.globus.cs.render.ComponentStore;
+import org.globus.cs.render.PageStore;
+import org.globus.cs.render.PreloadStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
