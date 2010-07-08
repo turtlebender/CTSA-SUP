@@ -13,7 +13,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-@Path("/{name:.*.pagedesc}")
+@Path("/{name: .+pagedesc$}")
 @RequestScoped
 public class PageResource {
     @PathParam("name")

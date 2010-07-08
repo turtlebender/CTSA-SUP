@@ -26,7 +26,7 @@ public class GuiceConfig extends GuiceServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        componentPath = servletContextEvent.getServletContext().getRealPath("/");
+        componentPath = servletContextEvent.getServletContext().getRealPath("/ctsasup");
         pagesPath = servletContextEvent.getServletContext().getRealPath("/");
         super.contextInitialized(servletContextEvent);
     }
@@ -56,7 +56,7 @@ public class GuiceConfig extends GuiceServletContextListener {
 
                 params.put(PackagesResourceConfig.PROPERTY_PACKAGES, "org.globus.cs.render.rest");
 
-                serveRegex("^/(.)*/*.pagedesc","^/(.)*/*.desc").with(GuiceContainer.class, params);                
+                serveRegex("(/.*.pagedesc)","(/.*.desc)").with(GuiceContainer.class, params);                
             }
         });
     }

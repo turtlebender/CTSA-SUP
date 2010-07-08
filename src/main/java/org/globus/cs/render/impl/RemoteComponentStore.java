@@ -17,7 +17,7 @@ public class RemoteComponentStore implements ComponentStore {
     }
 
     public Component getComponent(UriBuilder baseBuilder, UriBuilder relativeBuilder, String name) throws Exception {
-        return resourceHelper.getComponent(name).resource;
+        return resourceHelper.getComponent(relativeBuilder.path(name).build().toASCIIString()).resource;
     }
     
     public void storeComponent(String name, Component component) throws Exception {

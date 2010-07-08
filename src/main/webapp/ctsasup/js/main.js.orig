@@ -129,7 +129,7 @@ window.ctsasup.process = function(desc, base) {
             success: function(data){
 		    me.process(data, base);
             }
->>>>>>> Various fixes
+>>>>>>> added content wrapper for component
         });
         return;
     }
