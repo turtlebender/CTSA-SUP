@@ -9,4 +9,5 @@ package org.globus.cs.render.impl;
  */
 public class Preload extends Content{
     public String callback;
+    public String dataType;
 }

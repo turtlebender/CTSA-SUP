@@ -190,11 +190,12 @@ window.ctsasup.process = function(desc, base) {
     if (typeof(desc) == "string") {
         $.ajax({
             url: desc,
+	    dataType: "json",
             beforeSend: function(xhr) {
-                xhr.setRequestHeader("Accept", "application/org.globus.cs.webdef.page+json");
+		xhr.setRequestHeader("Accept", "application/org.globus.cs.webdef.page+json");
             },
             success: function(data){
-                me.process(data);
+		    me.process(data, base);
             }
         });
         return;
@@ -238,10 +239,10 @@ window.ctsasup.processc = function(id, desc, base) {
     }
     if (typeof(desc) != "object") return;
     var batch = this.newBatch();
-    if (desc.content) {
-        this.place(id, desc.content);
-    } else if (desc.uri) {
-        batch.add(this.resolve(base, desc.uri), function(data) {
+    if (desc.content.content) {
+        this.place(id, desc.content.content);
+    } else if (desc.content.uri) {
+        batch.add(this.resolve(base, desc.content.uri), function(data) {
             me.place(id, data);
         }, null, desc.content.dataType);
     }

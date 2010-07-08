@@ -44,16 +44,20 @@ public class DefaultPageStore implements PageStore {
     public Page getPage(UriBuilder baseBuilder, UriBuilder builder, String name) throws Exception {
         FileReader reader = new FileReader(new File(STORAGE_DIR, name));
         Page page = mapper.readValue(reader, Page.class);
-        Map<String, Component> components = page.slotMappings;
+        Map<String, Content<Component>> components = page.slotMappings;
         if (components != null) {
             for (String key : components.keySet()) {
-                Component component = components.get(key);
-                if (component.uri != null) {
-                    if (component.uri.startsWith("/")) {
-                        components.put(key, componentStore.getComponent(baseBuilder.clone(), builder.clone(), component.uri));
+                Content<Component> contentWrapper = components.get(key);
+                Component component = components.get(key).content;
+                if (contentWrapper.uri != null) {
+                    if (contentWrapper.uri.startsWith("/")) {
+                        component = componentStore.getComponent(baseBuilder.clone(), builder.clone(), contentWrapper.uri);
+
                     } else {
-                        components.put(key, componentStore.getComponent(baseBuilder.clone(), builder.clone(), component.uri));
+                        component = componentStore.getComponent(baseBuilder.clone(), builder.clone(), contentWrapper.uri);
                     }
+                    contentWrapper.content = component;
+                    components.put(key, contentWrapper);
                 }
             }
         }
