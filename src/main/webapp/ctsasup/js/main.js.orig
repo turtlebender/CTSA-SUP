@@ -1,28 +1,9 @@
 if (!window.ctsasup) window.ctsasup = {};
 
 /*
-<<<<<<< HEAD
  newBatch() - Create a new Batch
  .add(uri,callback,data,dataType) - Add work to the Batch
  .execute() - Do all work in the Batch (in one request if possible)
-=======
- .newBatch() - Create a new Batch
- .add(uri,callback,data,dataType) - Add work to the Batch
- .execute() - Do all work in the Batch (in one request if possible)
- */
-window.ctsasup.newBatch = function() {
-    if (window.osapi && window.osapi.newBatch) {
-        return window.ctsasup.newBatch_osapi();
-    }
-    //These lines are commented so we default to jquery instead of jsonproxy
-    //} else if(window.location.protocol == "file:") {
-    return window.ctsasup.newBatch_jquery();
-    //return window.ctsasup.newBatch_jsonproxy();
-}
-
-/*
- .newBatch_jquery() - Create a new AJAX/jQuery (direct) Batch
->>>>>>> fixed server side relative paths
  */
 window.ctsasup.newBatch = function() {
     return {
@@ -51,72 +32,8 @@ window.ctsasup.newBatch = function() {
 };
 
 /*
-<<<<<<< HEAD
  .resolve(base,path) - Basic URI resolver
  */
-=======
- .newBatch_jsonproxy() - Create a new JSONP (proxy) Batch
- */
-window.ctsasup.newBatch_jsonproxy = function() {
-    return {
-        '_todo': [],
-        '_finally': null,
-        'add': function(uri, cb, data, type) {
-            var me = this;
-            this._todo.push(function() {//This could look prettier
-                $.ajax({url:"http://ci.azich.org/proxy.php?uri=" + escape(window.ctsasup.resolve("" + window.location, uri)),dataType:"jsonp",data:data,success:
-                        function(data) {
-                            if (!data || !data.content) return;
-                            data = data.content;
-                            if (cb) cb(type == "json" ? $.parseJSON(data) : data);
-                            if (me._todo.length != 0) return;
-                            if (me._finally) me._finally();
-                        }
-                })
-            });
-        },
-        'execute': function(cb) {
-            this._finally = cb;
-            if (this._todo.length == 0 && cb) cb();
-            while (this._todo.length > 0) {
-                this._todo.shift().call(this);
-            }
-        }
-    };
-};
-
-/*
- .newBatch_osapi() - Create a new OpenSocial Batch
- */
-window.ctsasup.newBatch_osapi = function() {
-    return {
-        '_batch': osapi.newBatch(),
-        '_order': [],
-        '_params': {},
-        'add': function(uri, cb, data, type) { //data is currently ignored
-            var id = "batch" + Math.random();
-            this._order.push(id);
-            this._order.push(id);
-            this._params[id] = {cb:cb,data:data,type:type};
-            this._batch.add(id, uri);
-        },
-        'execute': function(cb) {
-            this._batch.execute(function(result) {
-                for (var i = 0; i < this._order.length; i++) {
-                    var id = this._order[i];
-                    var params = this._params[id];
-                    if (params.cb) params.cb(params.type == "json" || params.type == "jsonp" ? $.parseJSON(result[id]) : result[id]);
-                }
-                if (cb) cb();
-            });
-        }
-    };
-}
-
-/*
- .resolve(base,path) - Basic URI resolver
- */
->>>>>>> fixed server side relative paths
 window.ctsasup.resolve = function(base, path) {
     if (!base || path.match(/^\w+:\/\//)) return path;
     var results = base.match(/^(.*?)([^\/]*)$/);
@@ -155,11 +72,7 @@ window.ctsasup.contentify = function(o, batch) {
         (batch ? batch.add : $.get)(o.uri, function(data) {
             o.content = data;
             if (o.callback) o.callback(data);
-<<<<<<< HEAD
         });
-=======
-        }, null, o.dataType);
->>>>>>> fixed server side relative paths
     }
     for (var k in o) {
         this.contentify(o[k]);
@@ -188,11 +101,7 @@ window.ctsasup.preload = function(preload, base, batch) {
             if (preload[id].content) {
                 if (callback) callback(preload[id].content);
             } else if (preload[id].uri) {
-<<<<<<< HEAD
                 batch.add(me.resolve(base, preload[id].uri), callback);
-=======
-                batch.add(me.resolve(base, preload[id].uri), callback, null, preload[id].dataType);
->>>>>>> fixed server side relative paths
             }
         })();
     }
@@ -213,13 +122,14 @@ window.ctsasup.process = function(desc, base) {
 =======
         $.ajax({
             url: desc,
+	    dataType: "json",
             beforeSend: function(xhr) {
-                xhr.setRequestHeader("Accept", "application/org.globus.cs.webdef.page+json");
+		xhr.setRequestHeader("Accept", "application/org.globus.cs.webdef.page+json");
             },
             success: function(data){
-                me.process(data);
+		    me.process(data, base);
             }
->>>>>>> fixed server side relative paths
+>>>>>>> Various fixes
         });
         return;
     }
@@ -228,11 +138,7 @@ window.ctsasup.process = function(desc, base) {
     if (desc.slotMappings) {
         for (var id in desc.slotMappings) {
             if (desc.slotMappings[id].content) {
-<<<<<<< HEAD
                 this.processc(id, desc.slotMappings[id]);
-=======
-                this.processc(id, desc.slotMappings[id].content);
->>>>>>> fixed server side relative paths
             } else if (desc.slotMappings[id].uri) {
                 (function() { //Function wrapper necessary because "id" is overwritten next loop
                     var myid = id;
@@ -266,21 +172,12 @@ window.ctsasup.processc = function(id, desc, base) {
     }
     if (typeof(desc) != "object") return;
     var batch = this.newBatch();
-<<<<<<< HEAD
     if (desc.content.content) {
         this.place(id, desc.content.content);
     } else if (desc.content.uri) {
         batch.add(this.resolve(base, desc.content.uri), function(data) {
             me.place(id, data);
         });
-=======
-    if (desc.content) {
-        this.place(id, desc.content);
-    } else if (desc.uri) {
-        batch.add(this.resolve(base, desc.uri), function(data) {
-            me.place(id, data);
-        }, null, desc.content.dataType);
->>>>>>> fixed server side relative paths
     }
     batch.execute(function() {
         me.preload(desc.preload, base);
@@ -291,12 +188,6 @@ window.ctsasup._load = function() {
     if (this.load) this.load();
 };
 
-<<<<<<< HEAD
-=======
-$.ajaxSetup({"beforeSend":function(xhr) {
-    if (xhr.overrideMimeType)xhr.overrideMimeType("application/data")
-}});
->>>>>>> fixed server side relative paths
 $(document).ready(function() {
     window.ctsasup._load()
 });
