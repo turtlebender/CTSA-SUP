@@ -7,6 +7,7 @@ import com.sun.jersey.api.client.WebResource;
 import javax.ws.rs.core.EntityTag;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 
 public class RemoteResourceHelper<T> {
@@ -35,6 +36,9 @@ public class RemoteResourceHelper<T> {
         component = response.getEntity(type);
         //TODO: check cache control
         EntityTag version = response.getEntityTag();
+        if(version == null){
+            version = new EntityTag(UUID.randomUUID().toString());
+        }
         versioned = new Versioned<T>(component, version);
         resourceCache.put(name, versioned);
         return versioned;

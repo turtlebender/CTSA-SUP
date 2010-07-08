@@ -10,27 +10,29 @@ import org.globus.cs.render.RemoteResourceHelperFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.math.BigInteger;
-import java.security.MessageDigest;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
 public class FileSystemComponentStore implements ComponentStore {
-    private static final String STORAGE_DIR = System.getProperty("user.home") + "/webtool/components/";
+    private final File STORAGE_DIR;
+    private final File COMPONENT_STORAGE_DIR;
     private ObjectMapper mapper = new ObjectMapper();
     private Logger logger = LoggerFactory.getLogger(getClass());
     private RemoteResourceHelper<String> resourceHelper;
-    private MessageDigest digest;
+
 
     @Inject
-    public FileSystemComponentStore(Client client, RemoteResourceHelperFactory resourceHelperFactory) throws Exception {
-        digest = MessageDigest.getInstance("md5");
+    public FileSystemComponentStore(@RealComponentPath File componentPath, @RealComponentPath File realPath, Client client, RemoteResourceHelperFactory resourceHelperFactory) throws Exception {
+        STORAGE_DIR = realPath;
+        COMPONENT_STORAGE_DIR = componentPath;
         resourceHelper = resourceHelperFactory.createResourceHelper(client, String.class);
-        File dir = new File(STORAGE_DIR);
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
+        if (!STORAGE_DIR.exists()) {
+            if (!STORAGE_DIR.mkdirs()) {
                 logger.warn("Unable to create component store storage directory: {}", STORAGE_DIR);
             }
         }
@@ -39,20 +41,30 @@ public class FileSystemComponentStore implements ComponentStore {
         mapper.getSerializationConfig().setAnnotationIntrospector(introspector);
     }
 
-    public Component getComponent(String name) throws Exception {
-        digest.reset();
+    public Component getComponent(UriBuilder baseBuilder, UriBuilder relativeBuilder, String name) throws Exception {
         logger.debug("Reading component: {}", name);
-        digest.update(name.getBytes());
-        BigInteger hash = new BigInteger(1, digest.digest());
-        String fileName = hash.toString(16);
-        File componentFile = new File(STORAGE_DIR + fileName);
+        File componentFile = new File(COMPONENT_STORAGE_DIR, name);
         logger.debug("Reading file: {}", componentFile.toURI().toASCIIString());
+
         if (componentFile.exists()) {
             FileReader reader = new FileReader(componentFile);
             Component component = mapper.readValue(reader, Component.class);
+            String[] path = name.split("/");
+            StringBuilder builder = new StringBuilder();
+            for(int i = 0 ; i < path.length - 1 ; i++){
+                builder.append(path[i]);
+            }
             Content content = component.content;
             if (content.uri != null) {
-                Versioned<String> versioned = resourceHelper.getComponent(component.content.uri);
+                String tmpUri = component.content.uri;
+                if (!tmpUri.startsWith("http")) {
+                    if (!tmpUri.startsWith("/")) {
+                        tmpUri = relativeBuilder.path(builder.toString()).path(content.uri).build().toASCIIString();
+                    } else {
+                        tmpUri = baseBuilder.path(content.uri).build().toASCIIString();
+                    }
+                }
+                Versioned<String> versioned = resourceHelper.getComponent(tmpUri);
                 component.content.content = versioned.resource;
                 component.content.version = versioned.version.getValue();
             }
@@ -62,16 +74,19 @@ public class FileSystemComponentStore implements ComponentStore {
     }
 
     public void storeComponent(String name, Component component) throws Exception {
-        digest.reset();
         logger.debug("Writing component: {}", name);
         component.version = UUID.randomUUID().toString();
-        digest.update(name.getBytes());
-        BigInteger hash = new BigInteger(1, digest.digest());
-        String fileName = hash.toString(16);
-        File componentFile = new File(STORAGE_DIR + fileName);
+        File componentFile = new File(STORAGE_DIR, name);
+        File parent = componentFile.getParentFile();
+        if (!parent.exists()) {
+            if (!parent.mkdirs()) {
+                logger.info("Unable to create path: " + name);
+                throw new IllegalArgumentException("Unable to create path: " + name);
+            }
+        }
         logger.debug("Writing file: {}", componentFile.toURI().toASCIIString());
         FileWriter writer = new FileWriter(componentFile);
         mapper.writeValue(writer, component);
         writer.close();
-    }
+    }    
 }

@@ -5,6 +5,9 @@ import com.sun.jersey.api.client.Client;
 import org.globus.cs.render.ComponentStore;
 import org.globus.cs.render.RemoteResourceHelperFactory;
 
+import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
+
 public class RemoteComponentStore implements ComponentStore {
     private RemoteResourceHelper<Component> resourceHelper;
 
@@ -13,7 +16,7 @@ public class RemoteComponentStore implements ComponentStore {
         this.resourceHelper = factory.createResourceHelper(client, Component.class);
     }
 
-    public Component getComponent(String name) throws Exception {
+    public Component getComponent(UriBuilder baseBuilder, UriBuilder relativeBuilder, String name) throws Exception {
         return resourceHelper.getComponent(name).resource;
     }
     

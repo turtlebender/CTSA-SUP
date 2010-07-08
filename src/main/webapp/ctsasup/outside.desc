@@ -6,8 +6,5 @@
     "slot-header": {"uri": "components/header.desc"},
     "slot-main": {"uri": "components/outside.desc"},
     "slot-footer": {"uri": "components/footer.desc"}
-  },
-  "preload": {
-    
-  }
+  }  
 }
