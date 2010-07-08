@@ -17,14 +17,16 @@ import java.io.FileReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-@Path("/components")
 @RequestScoped
+@Path("/{name: .+desc$}")
 public class ComponentResource {
     @Context
     private UriInfo info;
 
     private ComponentStore componentStore;
     private File componentPath;
+    @PathParam("name")
+    private String name;
 
     @Inject
     public ComponentResource(@RealComponentPath File componentPath, ComponentStore store) {
@@ -34,17 +36,15 @@ public class ComponentResource {
 
 
     @GET
-    @Path("{name:.*.desc}")
     @Produces("application/org.globus.cs.webdef.component+json")
-    public Component getComponent(@PathParam("name") String name) throws Exception {
+    public Component getComponent() throws Exception {
         UriBuilder parentBuilder = UriBuilder.fromUri(getParent(info.getAbsolutePath()));
         return componentStore.getComponent(info.getBaseUriBuilder(), parentBuilder, name);
     }
 
     @POST
-    @Path("{name:.*.desc}")
     @Consumes("application/org.globus.cs.webdef.component+json")
-    public Response storeComponent(@PathParam("name") String name, Component component) throws Exception {
+    public Response storeComponent(Component component) throws Exception {
         componentStore.storeComponent(name, component);
         return Response.created(info.getAbsolutePath()).build();
     }

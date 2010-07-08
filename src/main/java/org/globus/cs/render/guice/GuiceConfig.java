@@ -4,6 +4,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
@@ -12,6 +14,9 @@ import org.globus.cs.render.PageStore;
 import org.globus.cs.render.PreloadStore;
 import org.globus.cs.render.RemoteResourceHelperFactory;
 import org.globus.cs.render.impl.*;
+import org.globus.cs.render.rest.ComponentContentProvider;
+import org.globus.cs.render.rest.JSONPProvider;
+import org.globus.cs.render.rest.JSONProvider;
 
 import javax.servlet.ServletContextEvent;
 import java.io.File;
@@ -26,7 +31,7 @@ public class GuiceConfig extends GuiceServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        componentPath = servletContextEvent.getServletContext().getRealPath("/ctsasup");
+        componentPath = servletContextEvent.getServletContext().getRealPath("/");
         pagesPath = servletContextEvent.getServletContext().getRealPath("/");
         super.contextInitialized(servletContextEvent);
     }
@@ -39,8 +44,11 @@ public class GuiceConfig extends GuiceServletContextListener {
             @Override
             protected void configureServlets() {
                 bind(RemoteResourceHelperFactory.class).to(HashMapRemoteResourceHelperFactory.class);
-
-                Client client = new Client();
+                ClientConfig config = new DefaultClientConfig();
+                config.getClasses().add(JSONProvider.class);
+                config.getClasses().add(JSONPProvider.class);
+                config.getClasses().add(ComponentContentProvider.class);
+                Client client = Client.create(config);
                 bind(Client.class).toInstance(client);
                 bind(File.class).annotatedWith(RealComponentPath.class).toInstance(new File(componentPath));
                 bind(File.class).annotatedWith(RealPagePath.class).toInstance(new File(pagesPath));
