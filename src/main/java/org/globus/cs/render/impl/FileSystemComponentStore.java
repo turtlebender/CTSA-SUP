@@ -14,8 +14,6 @@ import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.UUID;
 
 public class FileSystemComponentStore implements ComponentStore {
@@ -48,18 +46,13 @@ public class FileSystemComponentStore implements ComponentStore {
 
         if (componentFile.exists()) {
             FileReader reader = new FileReader(componentFile);
-            Component component = mapper.readValue(reader, Component.class);
-            String[] path = name.split("/");
-            StringBuilder builder = new StringBuilder();
-            for(int i = 0 ; i < path.length - 1 ; i++){
-                builder.append(path[i]);
-            }
+            Component component = mapper.readValue(reader, Component.class);            
             Content content = component.content;
             if (content.uri != null) {
                 String tmpUri = component.content.uri;
                 if (!tmpUri.startsWith("http")) {
                     if (!tmpUri.startsWith("/")) {
-                        tmpUri = relativeBuilder.path(builder.toString()).path(content.uri).build().toASCIIString();
+                        tmpUri = relativeBuilder.path(content.uri).build().toASCIIString();
                     } else {
                         tmpUri = baseBuilder.path(content.uri).build().toASCIIString();
                     }
