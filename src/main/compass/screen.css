@@ -1,29 +1,32 @@
-html, body, #page {
+html, body, {
   padding: 0;
   margin: 0;
   overflow: hidden;
   height: 100%;
   width: 100%;
+  #page { display: table; }
 }
 
-#page {
-  display: table;
-}
-
-#slot-header, #slot-main, #slot-footer {
+.slot-base {
   display: table-row;
   overflow: visible;
   width: 100%;
 }
-
 #slot-header {
+  display: table-row;
+  overflow: visible;
+  width: 100%;
   height: 118px;
 }
-
 #slot-main {
+  display: table-row;
+  overflow: visible;
+  width: 100%;
   padding: 8px;
 }
-
 #slot-footer {
+  display: table-row;
+  overflow: visible;
+  width: 100%;
   height: 50px;
 }

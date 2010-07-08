@@ -3,6 +3,9 @@ package org.globus.cs.render.impl;
 import com.google.inject.Inject;
 import org.globus.cs.render.ComponentStore;
 
+import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
+
 
 public class DefaultComponentStore implements ComponentStore {
     private ComponentStore remoteStore;
@@ -14,10 +17,10 @@ public class DefaultComponentStore implements ComponentStore {
         this.remoteStore = remoteStore;
     }
 
-    public Component getComponent(String name) throws Exception {
-        Component component = localStore.getComponent(name);
+    public Component getComponent(UriBuilder baseBuilder, UriBuilder relativeBuilder, String name) throws Exception {
+        Component component = localStore.getComponent(baseBuilder, relativeBuilder, name);
         if(component == null){
-            component = remoteStore.getComponent(name);
+            component = remoteStore.getComponent(baseBuilder, relativeBuilder, name);
         }
         return component;
     }

@@ -2,6 +2,8 @@ package org.globus.cs.render;
 
 import org.globus.cs.render.impl.Page;
 
+import javax.ws.rs.core.UriBuilder;
+
 /**
  * Created by IntelliJ IDEA.
  * User: trhowe
@@ -10,7 +12,7 @@ import org.globus.cs.render.impl.Page;
  * To change this template use File | Settings | File Templates.
  */
 public interface PageStore {
-    Page getPage(String name) throws Exception;
+    Page getPage(UriBuilder baseBuilder, UriBuilder builder, String name) throws Exception;
 
     void storePage(String name, Page page) throws Exception;
 }
