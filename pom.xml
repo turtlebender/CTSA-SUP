@@ -101,6 +101,10 @@
             <id>globus-releases</id>
             <url>http://repo.globus.org/uri/groups/public/</url>
         </repository>
+         <repository>
+            <id>globus-snapshots</id>
+            <url>http://repo.globus.org/content/groups/public-snapshots/</url>
+        </repository>
         <repository>
             <id>slurry-snapshot</id>            
             <url>http://code.google.com/p/slurry/source/browse/maven/snapshot/</url>
