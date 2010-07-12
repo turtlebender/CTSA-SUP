@@ -1,6 +1,6 @@
 <html>
 <head>
-<<<<<<< HEAD:src/main/webapp/ctsasup/basic.html
+<<<<<<< HEAD
 <title>Basic Page</title>
 <link rel="stylesheet" type="text/css" href="layout/basic.css">
 <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
@@ -13,7 +13,7 @@ window.ctsasup.load = function() {
 </script>
 =======
     <title>Basic Page</title>
-    <link href="layout/screen.css" media="screen, projection" rel="stylesheet" type="text/css"/>
+    <link href="style/screen.css" media="screen, projection" rel="stylesheet" type="text/css"/>
     <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
     <script type="text/javascript">
@@ -22,7 +22,7 @@ window.ctsasup.load = function() {
             this.process("com.example.basic.json");
         };
     </script>
->>>>>>> Restructured and renamed according to new best practices:src/main/webapp/ctsasup/com.example.basic.html
+>>>>>>> Updated to comply with new CSS specifications
 </head>
 <body>
 <div id="page">
