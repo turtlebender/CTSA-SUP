@@ -3,6 +3,6 @@
   "author": "Andrew Zich",
   "description": "Basic CI footer",
   "content": {
-    "uri": "footer.frag"
+    "uri": "footer.html"
   }
 }

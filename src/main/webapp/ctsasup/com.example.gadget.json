@@ -1,0 +1,13 @@
+{
+  "title": "Gadget Page",
+  "author": "Andrew Zich",
+  "description": "An sample page that uses a gadget and only URI-based data requests",
+  "slotMappings": {
+    "slot-header": {"uri": "components/com.example.header/header.json"},
+    "slot-main": {"uri": "components/com.example.gadget/gadget.json"},
+    "slot-footer": {"uri": "components/com.example.footer/footer.json"}
+  },
+  "preload": {
+    
+  }
+}
