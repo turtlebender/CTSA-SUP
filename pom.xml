@@ -109,6 +109,13 @@
              </snapshots>
         </repository>
         <repository>
+            <id>globus-local-snapshots</id>
+            <url>http://repo.globus.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
             <id>slurry-snapshot</id>            
             <url>http://code.google.com/p/slurry/source/browse/maven/snapshot/</url>
             <snapshots>
