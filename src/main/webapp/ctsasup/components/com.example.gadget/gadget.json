@@ -3,6 +3,6 @@
   "author": "Andrew Zich",
   "description": "Hello, World gadget",
   "content": {
-    "uri": "gadget.frag"
+    "uri": "gadget.html"
   }
 }

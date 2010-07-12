@@ -1,3 +1,39 @@
+<html>
+<head>
+<title>Template!</title>
+<style type="text/css">
+html, body, #page {
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+#page {
+  display: table;
+}
+
+#slot-header, #slot-main, #slot-footer {
+  display: table-row;
+  overflow: visible;
+  width: 100%;
+}
+
+#slot-header {
+  height: 118px;
+}
+
+#slot-main {
+  padding: 8px;
+}
+
+#slot-footer {
+  height: 50px;
+}
+</style>
+<script type="text/javascript">
+//<!--
 /*!
  * jQuery JavaScript Library v1.4.2
  * http://jquery.com/
@@ -152,3 +188,334 @@ d,e);d={top:b.top-e.top+j,left:b.left-e.left+i};"using"in b?b.using.call(a,d):f.
 f.top,left:d.left-f.left}},offsetParent:function(){return this.map(function(){for(var a=this.offsetParent||s.body;a&&!/^body|html$/i.test(a.nodeName)&&c.css(a,"position")==="static";)a=a.offsetParent;return a})}});c.each(["Left","Top"],function(a,b){var d="scroll"+b;c.fn[d]=function(f){var e=this[0],j;if(!e)return null;if(f!==w)return this.each(function(){if(j=wa(this))j.scrollTo(!a?f:c(j).scrollLeft(),a?f:c(j).scrollTop());else this[d]=f});else return(j=wa(e))?"pageXOffset"in j?j[a?"pageYOffset":
 "pageXOffset"]:c.support.boxModel&&j.document.documentElement[d]||j.document.body[d]:e[d]}});c.each(["Height","Width"],function(a,b){var d=b.toLowerCase();c.fn["inner"+b]=function(){return this[0]?c.css(this[0],d,false,"padding"):null};c.fn["outer"+b]=function(f){return this[0]?c.css(this[0],d,false,f?"margin":"border"):null};c.fn[d]=function(f){var e=this[0];if(!e)return f==null?null:this;if(c.isFunction(f))return this.each(function(j){var i=c(this);i[d](f.call(this,j,i[d]()))});return"scrollTo"in
 e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["client"+b]||e.document.body["client"+b]:e.nodeType===9?Math.max(e.documentElement["client"+b],e.body["scroll"+b],e.documentElement["scroll"+b],e.body["offset"+b],e.documentElement["offset"+b]):f===w?c.css(e,d):this.css(d,typeof f==="string"?f:f+"px")}});A.jQuery=A.$=c})(window);
+//-->
+</script>
+<script type="text/javascript">
+//<!--
+if (!window.ctsasup) window.ctsasup = {};
+
+/*
+ .newBatch() - Create a new Batch
+ .add(uri,callback,data,dataType) - Add work to the Batch
+ .execute() - Do all work in the Batch (in one request if possible)
+ */
+window.ctsasup.newBatch = function() {
+    if (window.osapi && window.osapi.newBatch) {
+        return window.ctsasup.newBatch_osapi();
+    }
+    //These lines are commented so we default to jquery instead of jsonproxy
+    //} else if(window.location.protocol == "file:") {
+    return window.ctsasup.newBatch_jquery();
+    //return window.ctsasup.newBatch_jsonproxy();
+}
+
+/*
+ .newBatch_jquery() - Create a new AJAX/jQuery (direct) Batch
+ */
+window.ctsasup.newBatch_jquery = function() {
+    return {
+        '_todo': [],
+        '_finally': null,
+        'add': function(uri, cb, data, type) {
+            var me = this;
+            this._todo.push(function() {//This could look prettier
+                $.ajax({url:uri,dataType:type,data:data,success:
+                        function(data) {
+                            if (cb) cb(data);
+                            if (me._todo.length != 0) return;
+                            if (me._finally) me._finally();
+                        }
+                })
+            });
+        },
+        'execute': function(cb) {
+            this._finally = cb;
+            if (this._todo.length == 0 && cb) cb();
+            while (this._todo.length > 0) {
+                this._todo.shift().call(this);
+            }
+        }
+    };
+};
+
+/*
+ .newBatch_jsonproxy() - Create a new JSONP (proxy) Batch
+ */
+window.ctsasup.newBatch_jsonproxy = function() {
+    return {
+        '_todo': [],
+        '_finally': null,
+        'add': function(uri, cb, data, type) {
+            var me = this;
+            this._todo.push(function() {//This could look prettier
+                $.ajax({url:"http://ci.azich.org/proxy.php?uri=" + escape(window.ctsasup.resolve("" + window.location, uri)),dataType:"jsonp",data:data,success:
+                        function(data) {
+                            if (!data || !data.content) return;
+                            data = data.content;
+                            if (cb) cb(type == "json" ? $.parseJSON(data) : data);
+                            if (me._todo.length != 0) return;
+                            if (me._finally) me._finally();
+                        }
+                })
+            });
+        },
+        'execute': function(cb) {
+            this._finally = cb;
+            if (this._todo.length == 0 && cb) cb();
+            while (this._todo.length > 0) {
+                this._todo.shift().call(this);
+            }
+        }
+    };
+};
+
+/*
+ .newBatch_osapi() - Create a new OpenSocial Batch
+ */
+window.ctsasup.newBatch_osapi = function() {
+    return {
+        '_batch': osapi.newBatch(),
+        '_order': [],
+        '_params': {},
+        'add': function(uri, cb, data, type) { //data is currently ignored
+            var id = "batch" + Math.random();
+            this._order.push(id);
+            this._order.push(id);
+            this._params[id] = {cb:cb,data:data,type:type};
+            this._batch.add(id, uri);
+        },
+        'execute': function(cb) {
+            this._batch.execute(function(result) {
+                for (var i = 0; i < this._order.length; i++) {
+                    var id = this._order[i];
+                    var params = this._params[id];
+                    if (params.cb) params.cb(params.type == "json" || params.type == "jsonp" ? $.parseJSON(result[id]) : result[id]);
+                }
+                if (cb) cb();
+            });
+        }
+    };
+}
+
+/*
+ .resolve(base,path) - Basic URI resolver
+ */
+window.ctsasup.resolve = function(base, path) {
+    if (!base || path.match(/^\w+:\/\//)) return path;
+    var results = base.match(/^(.*?)([^\/]*)$/);
+    base = results[1];
+    if (path.match(/^\//)) {
+        var results = base.match(/^(\w+:\/\/[^\/]+)/);
+        if (!results) return path;
+        return results[1] + path;
+    }
+    return base + path;
+};
+
+/*
+ .get(uri,callback) - Fetch the text content of the requested URI and feed it to callback function
+ */
+window.ctsasup.get = function(uri, cb) {
+    $.get(uri, function(data) {
+        if (cb)cb(data)
+    });
+};
+
+/*
+ .place(id,content) - Put the text content into the element with the specified ID
+ */
+window.ctsasup.place = function(id, data) {
+    $("#" + id).html(data);
+};
+
+/*
+ .contentify(object,[batch]) - Recursively seek out unfilled data requests in object and fill them.
+ If the batch parameter is specified, add them to the batch instead of requesting them directly.
+ */
+window.ctsasup.contentify = function(o, batch) {
+    if (!o || typeof(o) != "object") return;
+    if (o.uri && !o.content) {
+        (batch ? batch.add : $.get)(o.uri, function(data) {
+            o.content = data;
+            if (o.callback) o.callback(data);
+        }, null, o.dataType);
+    }
+    for (var k in o) {
+        this.contentify(o[k]);
+    }
+};
+
+/*
+ .preload(preload,base) - Load/execute a preload object with the specified base URI
+ .preload(preload,base,batch) - Load/execute a preload object with the specified base URI and Batch
+ */
+window.ctsasup.preload = function(preload, base, batch) {
+    if (!preload) return;
+    var me = this;
+    if (!batch) {
+        var batch = this.newBatch();
+        window.ctsasup.preload(preload, base, batch);
+        batch.execute();
+        return;
+    }
+    for (var id in preload) {
+        (function() { //Again, scope is too big
+            var callback = preload[id].callback;
+            if (callback && typeof(callback) == "string") {
+                callback = eval(callback);
+            }
+            if (preload[id].content) {
+                if (callback) callback(preload[id].content);
+            } else if (preload[id].uri) {
+                batch.add(me.resolve(base, preload[id].uri), callback, null, preload[id].dataType);
+            }
+        })();
+    }
+}
+
+/*
+ .process(descriptor) - Set up the page according to the page descriptor object
+ .process(uri) - Set up the page according to the page descriptor JSON at the specifed URI string
+ base - Use base for relative URIs (optional)
+ */
+window.ctsasup.process = function(desc, base) {
+    if (!desc) return;
+    var me = this;
+    if (typeof(desc) == "string") {
+        $.ajax({
+            url: desc,
+	    dataType: "json",
+            beforeSend: function(xhr) {
+		xhr.setRequestHeader("Accept", "application/org.globus.cs.webdef.page+json");
+            },
+            success: function(data){
+		    me.process(data, base);
+            }
+        });
+        return;
+    }
+    if (typeof(desc) != "object") return;
+    var batch = this.newBatch();
+    if (desc.slotMappings) {
+        for (var id in desc.slotMappings) {
+            if (desc.slotMappings[id].content) {
+                this.processc(id, desc.slotMappings[id].content);
+            } else if (desc.slotMappings[id].uri) {
+                (function() { //Function wrapper necessary because "id" is overwritten next loop
+                    var myid = id;
+                    var uri = me.resolve(base, desc.slotMappings[myid].uri);
+                    batch.add(uri, function(data) {
+                        desc.slotMappings[myid].content = data; //Why not save it for future use?
+                        me.processc(myid, data, uri);
+                    }, null, "json");
+                })();
+            }
+        }
+    }
+    batch.execute(function() {
+        me.preload(desc.preload, base);
+    });
+};
+
+/*
+ .processc(id,descriptor) - Set up the slot according to the component descriptor object
+ .processc(id,uri) - Set up the slot according to the component descriptor JSON at the specifed URI string
+ base - Use base for relative URIs (optional)
+ */
+window.ctsasup.processc = function(id, desc, base) {
+    if (!desc) return;
+    var me = this;
+    if (typeof(desc) == "string") {
+        $.getJSON(desc, function(data) {
+            me.processc(data)
+        });
+        return;
+    }
+    if (typeof(desc) != "object") return;
+    var batch = this.newBatch();
+    if (desc.content.content) {
+        this.place(id, desc.content.content);
+    } else if (desc.content.uri) {
+        batch.add(this.resolve(base, desc.content.uri), function(data) {
+            me.place(id, data);
+        }, null, desc.content.dataType);
+    }
+    batch.execute(function() {
+        me.preload(desc.preload, base);
+    });
+};
+
+window.ctsasup._load = function() {
+    if (this.load) this.load();
+};
+
+$.ajaxSetup({"beforeSend":function(xhr) {
+    if (xhr.overrideMimeType)xhr.overrideMimeType("application/data")
+}});
+$(document).ready(function() {
+    window.ctsasup._load()
+});
+//-->
+</script>
+<script type="text/javascript">
+//<!--
+if(!window.ctsasup) window.ctsasup = {};
+window.ctsasup.load = function() {
+  this.process({
+      "title": "Basic Page",
+      "author": "Andrew Zich",
+      "description": "An sample page that uses only components and URI-based data requests",
+      "slotMappings": {
+        "slot-header": {
+          "content": {
+            "title": "Header Component",
+            "author": "Andrew Zich",
+            "description": "Basic CI header",
+            "content": {
+              "content": "<div style=\"width: 100%; height: 100%; background: #274155 url(data:image/png;base64,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) no-repeat 3px 50%\">\n</div>\n"
+            }
+          }
+        },
+        "slot-main": {
+          "content": {
+            "title": "Sample Component",
+            "author": "Andrew Zich",
+            "description": "Hello World component",
+            "content": {
+              "content": "<div style=\"width: 100%; height: 100%; background-color: white; color: #333; margin: 5px\">\n<div id=\"main-content\"></div>\nI'm a component so this link can redirect the whole page: <a href=\"http://ci.uchicago.edu/\">ci.uchicago.edu</a>\n</div>\n<script type=\"text/javascript\">\nfunction gothw(data) {\n  $('#main-content').html(data);\n}\n</script>\n"
+            },
+            "preload": {
+              "hello": {
+                "content": "Hello, World!",
+                "callback": "gothw"
+              }
+            }
+          }
+        },
+        "slot-footer": {
+          "content": {
+            "title": "Footer Component",
+            "author": "Andrew Zich",
+            "description": "Basic CI footer",
+            "content": {
+              "content": "<div style=\"width: 100%; height: 100%; background-color: #274155; color: #929EA8; padding: 5px\">\nI'm a component so this link <span style=\"text-decoration: underline\">can</span> redirect the whole page: \n<a style=\"color: #C8CED3; text-decoration: none\" href=\"http://ci.uchicago.edu\">ci.uchicago.edu</a>\n</div>\n"
+            }
+          }
+        }
+      },
+      "preload": {
+        
+      }
+  });
+};
+//-->
+</script>
+</head>
+<body>
+<div id="page">
+<div id="slot-header"></div>
+<div id="slot-main"></div>
+<div id="slot-footer"></div>
+</div>
+</body>
+</html>

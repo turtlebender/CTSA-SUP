@@ -3,6 +3,6 @@
   "author": "Andrew Zich",
   "description": "Basic CI header",
   "content": {
-    "uri": "header.frag"
+    "uri": "header.html"
   }
 }

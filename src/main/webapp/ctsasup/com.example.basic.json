@@ -1,0 +1,10 @@
+{
+  "name": "Basic Page",
+  "author": "Andrew Zich",
+  "description": "An sample page that uses only components and URI-based data requests",
+  "slotMappings": {
+    "slot-header": {"uri": "components/com.example.header/header.json"},
+    "slot-main": {"uri": "components/com.example.main/main.json"},
+    "slot-footer": {"uri": "components/com.example.footer/footer.json"}
+  }  
+}

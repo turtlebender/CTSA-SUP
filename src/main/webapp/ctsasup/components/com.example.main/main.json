@@ -3,7 +3,7 @@
   "author": "Andrew Zich",
   "description": "Hello, World component",
   "content": {
-    "uri": "main.frag"
+    "uri": "main.html"
   },
   "preload": {
     "hello": {

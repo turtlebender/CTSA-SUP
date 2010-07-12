@@ -1,0 +1,34 @@
+<html>
+<head>
+<<<<<<< HEAD:src/main/webapp/ctsasup/basic.html
+<title>Basic Page</title>
+<link rel="stylesheet" type="text/css" href="layout/basic.css">
+<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+<script type="text/javascript">
+if(!window.ctsasup) window.ctsasup = {};
+window.ctsasup.load = function() {
+  this.process("http://localhost:8080/ctsa-sup/pages/newpage.json");
+};
+</script>
+=======
+    <title>Basic Page</title>
+    <link href="layout/screen.css" media="screen, projection" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript">
+        if (!window.ctsasup) window.ctsasup = {};
+        window.ctsasup.load = function() {
+            this.process("com.example.basic.json");
+        };
+    </script>
+>>>>>>> Restructured and renamed according to new best practices:src/main/webapp/ctsasup/com.example.basic.html
+</head>
+<body>
+<div id="page">
+<div id="slot-header"></div>
+<div id="slot-main"></div>
+<div id="slot-footer"></div>
+</div>
+</body>
+</html>
