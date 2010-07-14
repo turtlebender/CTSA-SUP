@@ -1,9 +1,9 @@
-if (!window.ctsasup) window.ctsasup = {};
+if (!window.weave) window.weave = {};
 
 /*
   .fixer(object,base) - Apply the .resolve function to every .src and .href in the DOM object with base
  */
-window.ctsasup.fixer = function(o,base) {
+window.weave.fixer = function(o,base) {
     if(!o || !base) return o;
     if(!o.getAttribute || !o.setAttribute) return o;
     if(o.getAttribute("src")) o.setAttribute("src",this.resolve(base,o.getAttribute("src")));
@@ -21,20 +21,20 @@ window.ctsasup.fixer = function(o,base) {
  .add(uri,callback,data,dataType) - Add work to the Batch
  .execute() - Do all work in the Batch (in one request if possible)
  */
-window.ctsasup.newBatch = function() {
+window.weave.newBatch = function() {
     if (window.osapi && window.osapi.newBatch) {
-        return window.ctsasup.newBatch_osapi();
+        return window.weave.newBatch_osapi();
     }
     //These lines are commented so we default to jquery instead of jsonproxy
     //} else if(window.location.protocol == "file:") {
-    return window.ctsasup.newBatch_jquery();
-    //return window.ctsasup.newBatch_jsonproxy();
+    return window.weave.newBatch_jquery();
+    //return window.weave.newBatch_jsonproxy();
 };
 
 /*
  .newBatch_jquery() - Create a new AJAX/jQuery (direct) Batch
  */
-window.ctsasup.newBatch_jquery = function() {
+window.weave.newBatch_jquery = function() {
     return {
         '_todo': [],
         '_finally': null,
@@ -63,14 +63,14 @@ window.ctsasup.newBatch_jquery = function() {
 /*
  .newBatch_jsonproxy() - Create a new JSONP (proxy) Batch
  */
-window.ctsasup.newBatch_jsonproxy = function() {
+window.weave.newBatch_jsonproxy = function() {
     return {
         '_todo': [],
         '_finally': null,
         'add': function(uri, cb, data, type) {
             var me = this;
             this._todo.push(function() {//This could look prettier
-                $.ajax({url:"http://ci.azich.org/proxy.php?uri=" + escape(window.ctsasup.resolve("" + window.location, uri)),dataType:"jsonp",data:data,success:
+                $.ajax({url:"http://ci.azich.org/proxy.php?uri=" + escape(window.weave.resolve("" + window.location, uri)),dataType:"jsonp",data:data,success:
                         function(data) {
                             if (!data || !data.content) return;
                             data = data.content;
@@ -94,7 +94,7 @@ window.ctsasup.newBatch_jsonproxy = function() {
 /*
  .newBatch_osapi() - Create a new OpenSocial Batch
  */
-window.ctsasup.newBatch_osapi = function() {
+window.weave.newBatch_osapi = function() {
     return {
         '_batch': osapi.newBatch(),
         '_order': [],
@@ -122,7 +122,7 @@ window.ctsasup.newBatch_osapi = function() {
 /*
  .resolve(base,path) - Basic URI resolver
  */
-window.ctsasup.resolve = function(base, path) {
+window.weave.resolve = function(base, path) {
     if (!base || path.match(/^\w+:\/\//)) return path;
     var results = base.match(/^(.*?)([^\/]*)$/);
     base = results[1];
@@ -137,7 +137,7 @@ window.ctsasup.resolve = function(base, path) {
 /*
  .get(uri,callback) - Fetch the text content of the requested URI and feed it to callback function
  */
-window.ctsasup.get = function(uri, cb) {
+window.weave.get = function(uri, cb) {
     $.get(uri, function(data) {
         if (cb)cb(data)
     });
@@ -147,7 +147,7 @@ window.ctsasup.get = function(uri, cb) {
  .place(id,content) - Put the text content into the element with the specified ID
  .place(id,content,base) - Apply .fixer to the content before placing it
  */
-window.ctsasup.place = function(id, data, base) {
+window.weave.place = function(id, data, base) {
     if(base) {
 	var obj = document.createElement('DIV');
 	obj.innerHTML = data;
@@ -161,7 +161,7 @@ window.ctsasup.place = function(id, data, base) {
  .contentify(object,[batch]) - Recursively seek out unfilled data requests in object and fill them.
  If the batch parameter is specified, add them to the batch instead of requesting them directly.
  */
-window.ctsasup.contentify = function(o, batch) {
+window.weave.contentify = function(o, batch) {
     if (!o || typeof(o) != "object") return;
     if (o.uri && !o.content) {
         (batch ? batch.add : $.get)(o.uri, function(data) {
@@ -178,12 +178,12 @@ window.ctsasup.contentify = function(o, batch) {
  .preload(preload,base) - Load/execute a preload object with the specified base URI
  .preload(preload,base,batch) - Load/execute a preload object with the specified base URI and Batch
  */
-window.ctsasup.preload = function(preload, base, batch) {
+window.weave.preload = function(preload, base, batch) {
     if (!preload) return;
     var me = this;
     if (!batch) {
         var batch = this.newBatch();
-        window.ctsasup.preload(preload, base, batch);
+        window.weave.preload(preload, base, batch);
         batch.execute();
         return;
     }
@@ -207,7 +207,7 @@ window.ctsasup.preload = function(preload, base, batch) {
  .process(uri) - Set up the page according to the page descriptor JSON at the specifed URI string
  base - Use base for relative URIs (optional)
  */
-window.ctsasup.process = function(desc, base) {
+window.weave.process = function(desc, base) {
     if (!desc) return;
     var me = this;
     if (typeof(desc) == "string") {
@@ -251,7 +251,7 @@ window.ctsasup.process = function(desc, base) {
  .processc(id,uri) - Set up the slot according to the component descriptor JSON at the specifed URI string
  base - Use base for relative URIs (optional)
  */
-window.ctsasup.processc = function(id, desc, base) {
+window.weave.processc = function(id, desc, base) {
     if (!desc) return;
     var me = this;
     if (typeof(desc) == "string") {
@@ -274,7 +274,7 @@ window.ctsasup.processc = function(id, desc, base) {
     });
 };
 
-window.ctsasup._load = function() {
+window.weave._load = function() {
     if (this.load) this.load();
 };
 
@@ -282,5 +282,5 @@ $.ajaxSetup({"beforeSend":function(xhr) {
     if (xhr.overrideMimeType)xhr.overrideMimeType("application/data")
 }});
 $(document).ready(function() {
-    window.ctsasup._load()
+    window.weave._load()
 });
