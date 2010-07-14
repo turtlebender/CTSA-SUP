@@ -1,6 +1,22 @@
 if (!window.ctsasup) window.ctsasup = {};
 
 /*
+  .fixer(object,base) - Apply the .resolve function to every .src and .href in the DOM object with base
+ */
+window.ctsasup.fixer = function(o,base) {
+    if(!o || !base) return o;
+    if(!o.getAttribute || !o.setAttribute) return o;
+    if(o.getAttribute("src")) o.setAttribute("src",this.resolve(base,o.getAttribute("src")));
+    if(o.getAttribute("href")) o.setAttribute("href",this.resolve(base,o.getAttribute("href")));
+    var child = o.firstChild;
+    while(child) {
+	this.fixer(child,base);
+	child = child.nextSibling;
+    }
+    return o;
+};
+
+/*
  .newBatch() - Create a new Batch
  .add(uri,callback,data,dataType) - Add work to the Batch
  .execute() - Do all work in the Batch (in one request if possible)
@@ -13,7 +29,7 @@ window.ctsasup.newBatch = function() {
     //} else if(window.location.protocol == "file:") {
     return window.ctsasup.newBatch_jquery();
     //return window.ctsasup.newBatch_jsonproxy();
-}
+};
 
 /*
  .newBatch_jquery() - Create a new AJAX/jQuery (direct) Batch
@@ -129,8 +145,15 @@ window.ctsasup.get = function(uri, cb) {
 
 /*
  .place(id,content) - Put the text content into the element with the specified ID
+ .place(id,content,base) - Apply .fixer to the content before placing it
  */
-window.ctsasup.place = function(id, data) {
+window.ctsasup.place = function(id, data, base) {
+    if(base) {
+	var obj = document.createElement('DIV');
+	obj.innerHTML = data;
+	this.fixer(obj,base);
+	data = obj.innerHTML;
+    }
     $("#" + id).html(data);
 };
 
@@ -240,10 +263,10 @@ window.ctsasup.processc = function(id, desc, base) {
     if (typeof(desc) != "object") return;
     var batch = this.newBatch();
     if (desc.content.content) {
-        this.place(id, desc.content.content);
+        this.place(id, desc.content.content, base);
     } else if (desc.content.uri) {
         batch.add(this.resolve(base, desc.content.uri), function(data) {
-            me.place(id, data);
+		me.place(id, data, base);
         }, null, desc.content.dataType);
     }
     batch.execute(function() {
