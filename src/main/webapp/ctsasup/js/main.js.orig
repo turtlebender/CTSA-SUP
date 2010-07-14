@@ -1,12 +1,16 @@
-if (!window.ctsasup) window.ctsasup = {};
+if (!window.weave) window.weave = {};
 
 /*
 <<<<<<< HEAD
  newBatch() - Create a new Batch
+ .add(uri,callback,data,dataType) - Add work to the Batch
+ .execute() - Do all work in the Batch (in one request if possible)
+ */
+window.ctsasup.newBatch = function() {
 =======
   .fixer(object,base) - Apply the .resolve function to every .src and .href in the DOM object with base
  */
-window.ctsasup.fixer = function(o,base) {
+window.weave.fixer = function(o,base) {
     if(!o || !base) return o;
     if(!o.getAttribute || !o.setAttribute) return o;
     if(o.getAttribute("src")) o.setAttribute("src",this.resolve(base,o.getAttribute("src")));
@@ -21,27 +25,24 @@ window.ctsasup.fixer = function(o,base) {
 
 /*
  .newBatch() - Create a new Batch
->>>>>>> Added .fixer functionality to main.js
  .add(uri,callback,data,dataType) - Add work to the Batch
  .execute() - Do all work in the Batch (in one request if possible)
  */
-window.ctsasup.newBatch = function() {
-<<<<<<< HEAD
-=======
+window.weave.newBatch = function() {
     if (window.osapi && window.osapi.newBatch) {
-        return window.ctsasup.newBatch_osapi();
+        return window.weave.newBatch_osapi();
     }
     //These lines are commented so we default to jquery instead of jsonproxy
     //} else if(window.location.protocol == "file:") {
-    return window.ctsasup.newBatch_jquery();
-    //return window.ctsasup.newBatch_jsonproxy();
+    return window.weave.newBatch_jquery();
+    //return window.weave.newBatch_jsonproxy();
 };
 
 /*
  .newBatch_jquery() - Create a new AJAX/jQuery (direct) Batch
  */
-window.ctsasup.newBatch_jquery = function() {
->>>>>>> Added .fixer functionality to main.js
+window.weave.newBatch_jquery = function() {
+>>>>>>> Updated JavaScript to use "weave" instead of "ctsasup"
     return {
         '_todo': [],
         '_finally': null,
@@ -68,9 +69,71 @@ window.ctsasup.newBatch_jquery = function() {
 };
 
 /*
+<<<<<<< HEAD
+=======
+ .newBatch_jsonproxy() - Create a new JSONP (proxy) Batch
+ */
+window.weave.newBatch_jsonproxy = function() {
+    return {
+        '_todo': [],
+        '_finally': null,
+        'add': function(uri, cb, data, type) {
+            var me = this;
+            this._todo.push(function() {//This could look prettier
+                $.ajax({url:"http://ci.azich.org/proxy.php?uri=" + escape(window.weave.resolve("" + window.location, uri)),dataType:"jsonp",data:data,success:
+                        function(data) {
+                            if (!data || !data.content) return;
+                            data = data.content;
+                            if (cb) cb(type == "json" ? $.parseJSON(data) : data);
+                            if (me._todo.length != 0) return;
+                            if (me._finally) me._finally();
+                        }
+                })
+            });
+        },
+        'execute': function(cb) {
+            this._finally = cb;
+            if (this._todo.length == 0 && cb) cb();
+            while (this._todo.length > 0) {
+                this._todo.shift().call(this);
+            }
+        }
+    };
+};
+
+/*
+ .newBatch_osapi() - Create a new OpenSocial Batch
+ */
+window.weave.newBatch_osapi = function() {
+    return {
+        '_batch': osapi.newBatch(),
+        '_order': [],
+        '_params': {},
+        'add': function(uri, cb, data, type) { //data is currently ignored
+            var id = "batch" + Math.random();
+            this._order.push(id);
+            this._order.push(id);
+            this._params[id] = {cb:cb,data:data,type:type};
+            this._batch.add(id, uri);
+        },
+        'execute': function(cb) {
+            this._batch.execute(function(result) {
+                for (var i = 0; i < this._order.length; i++) {
+                    var id = this._order[i];
+                    var params = this._params[id];
+                    if (params.cb) params.cb(params.type == "json" || params.type == "jsonp" ? $.parseJSON(result[id]) : result[id]);
+                }
+                if (cb) cb();
+            });
+        }
+    };
+}
+
+/*
+>>>>>>> Updated JavaScript to use "weave" instead of "ctsasup"
  .resolve(base,path) - Basic URI resolver
  */
-window.ctsasup.resolve = function(base, path) {
+window.weave.resolve = function(base, path) {
     if (!base || path.match(/^\w+:\/\//)) return path;
     var results = base.match(/^(.*?)([^\/]*)$/);
     base = results[1];
@@ -85,7 +148,7 @@ window.ctsasup.resolve = function(base, path) {
 /*
  .get(uri,callback) - Fetch the text content of the requested URI and feed it to callback function
  */
-window.ctsasup.get = function(uri, cb) {
+window.weave.get = function(uri, cb) {
     $.get(uri, function(data) {
         if (cb)cb(data)
     });
@@ -93,15 +156,18 @@ window.ctsasup.get = function(uri, cb) {
 
 /*
  .place(id,content) - Put the text content into the element with the specified ID
- .place(id,content,base) - Apply .fixer to the content before placing it
  */
-window.ctsasup.place = function(id, data, base) {
+<<<<<<< HEAD
+window.ctsasup.place = function(id, data) {
+=======
+window.weave.place = function(id, data, base) {
     if(base) {
 	var obj = document.createElement('DIV');
 	obj.innerHTML = data;
 	this.fixer(obj,base);
 	data = obj.innerHTML;
     }
+>>>>>>> Updated JavaScript to use "weave" instead of "ctsasup"
     $("#" + id).html(data);
 };
 
@@ -109,7 +175,7 @@ window.ctsasup.place = function(id, data, base) {
  .contentify(object,[batch]) - Recursively seek out unfilled data requests in object and fill them.
  If the batch parameter is specified, add them to the batch instead of requesting them directly.
  */
-window.ctsasup.contentify = function(o, batch) {
+window.weave.contentify = function(o, batch) {
     if (!o || typeof(o) != "object") return;
     if (o.uri && !o.content) {
         (batch ? batch.add : $.get)(o.uri, function(data) {
@@ -126,12 +192,12 @@ window.ctsasup.contentify = function(o, batch) {
  .preload(preload,base) - Load/execute a preload object with the specified base URI
  .preload(preload,base,batch) - Load/execute a preload object with the specified base URI and Batch
  */
-window.ctsasup.preload = function(preload, base, batch) {
+window.weave.preload = function(preload, base, batch) {
     if (!preload) return;
     var me = this;
     if (!batch) {
         var batch = this.newBatch();
-        window.ctsasup.preload(preload, base, batch);
+        window.weave.preload(preload, base, batch);
         batch.execute();
         return;
     }
@@ -155,7 +221,7 @@ window.ctsasup.preload = function(preload, base, batch) {
  .process(uri) - Set up the page according to the page descriptor JSON at the specifed URI string
  base - Use base for relative URIs (optional)
  */
-window.ctsasup.process = function(desc, base) {
+window.weave.process = function(desc, base) {
     if (!desc) return;
     var me = this;
     if (typeof(desc) == "string") {
@@ -192,7 +258,7 @@ window.ctsasup.process = function(desc, base) {
  .processc(id,uri) - Set up the slot according to the component descriptor JSON at the specifed URI string
  base - Use base for relative URIs (optional)
  */
-window.ctsasup.processc = function(id, desc, base) {
+window.weave.processc = function(id, desc, base) {
     if (!desc) return;
     var me = this;
     if (typeof(desc) == "string") {
@@ -204,26 +270,21 @@ window.ctsasup.processc = function(id, desc, base) {
     if (typeof(desc) != "object") return;
     var batch = this.newBatch();
     if (desc.content.content) {
-        this.place(id, desc.content.content, base);
+        this.place(id, desc.content.content);
     } else if (desc.content.uri) {
         batch.add(this.resolve(base, desc.content.uri), function(data) {
-<<<<<<< HEAD
             me.place(id, data);
         });
-=======
-		me.place(id, data, base);
-        }, null, desc.content.dataType);
->>>>>>> Added .fixer functionality to main.js
     }
     batch.execute(function() {
         me.preload(desc.preload, base);
     });
 };
 
-window.ctsasup._load = function() {
+window.weave._load = function() {
     if (this.load) this.load();
 };
 
 $(document).ready(function() {
-    window.ctsasup._load()
+    window.weave._load()
 });
